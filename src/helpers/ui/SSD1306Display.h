@@ -7,6 +7,10 @@
 #include <Adafruit_SSD1306.h>
 #include <helpers/RefCountedDigitalPin.h>
 
+#ifdef DISPLAY_UTF8_FONTS
+  #include <U8g2_for_Adafruit_GFX.h>
+#endif
+
 #ifndef PIN_OLED_RESET
   #define PIN_OLED_RESET        21 // Reset pin # (or -1 if sharing Arduino reset pin)
 #endif
@@ -21,6 +25,11 @@ class SSD1306Display : public DisplayDriver {
   uint8_t _color;
   RefCountedDigitalPin* _peripher_power;
 
+#ifdef DISPLAY_UTF8_FONTS
+  U8G2_FOR_ADAFRUIT_GFX u8f;   // UTF-8 capable renderer (Cyrillic etc) for non-ASCII text
+  void printUTF8(const char* str);
+#endif
+
   bool i2c_probe(TwoWire& wire, uint8_t addr);
 public:
   SSD1306Display(RefCountedDigitalPin* peripher_power=NULL) : DisplayDriver(128, 64), 
@@ -32,6 +41,9 @@ public:
   bool begin();
 
   bool isOn() override { return _isOn; }
+#ifdef DISPLAY_UTF8_FONTS
+  bool supportsUTF8() override { return true; }
+#endif
   void turnOn() override;
   void turnOff() override;
   void clear() override;
