@@ -23,6 +23,7 @@ public:
 
   virtual bool isOn() = 0;
   virtual bool isEink() { return false; } // default to non-eink, override in eink drivers
+  virtual bool supportsUTF8() { return false; } // true if print()/getTextWidth() can render non-ASCII UTF-8
   virtual void forceFullRefresh() {} // next refresh will be full for eink
   virtual void turnOn() = 0;
   virtual void turnOff() = 0;
@@ -54,6 +55,11 @@ public:
   
   // convert UTF-8 characters to displayable block characters for compatibility
   virtual void translateUTF8ToBlocks(char* dest, const char* src, size_t dest_size) {
+    if (supportsUTF8()) {  // driver can render UTF-8 directly, pass through unchanged
+      strncpy(dest, src, dest_size - 1);
+      dest[dest_size - 1] = 0;
+      return;
+    }
     size_t j = 0;
     for (size_t i = 0; src[i] != 0 && j < dest_size - 1; i++) {
       unsigned char c = (unsigned char)src[i];
@@ -98,7 +104,12 @@ public:
     int str_len = strlen(temp_str);
     
     while (str_len > 0 && getTextWidth(temp_str) > max_width - ellipsis_width) {
-      temp_str[--str_len] = 0;
+      // remove one full UTF-8 character: continuation bytes (10xxxxxx) plus the lead byte
+      unsigned char b;
+      do {
+        b = (unsigned char) temp_str[--str_len];
+        temp_str[str_len] = 0;
+      } while (str_len > 0 && (b & 0xC0) == 0x80);
     }
     strcat(temp_str, ellipsis);
     
