@@ -15,6 +15,12 @@ class DisplayDriver {
   int _w, _h;
 protected:
   DisplayDriver(int w, int h) { _w = w; _h = h; }
+  static bool hasNonASCII(const char* str) {
+    for (const char* p = str; *p; p++) {
+      if ((unsigned char)*p >= 0x80) return true;
+    }
+    return false;
+  }
 public:
   //enum Color { DARK=0, LIGHT, RED, GREEN, BLUE, YELLOW, ORANGE }; // on b/w screen, colors will be !=0 synonym of light
 
