@@ -14,7 +14,7 @@ void GenericVibration::trigger() {
 
 void GenericVibration::loop() {
   if (isVibrating()) {
-    if ((millis() / 1000) % 2 == 0) {
+    if ((millis() / 500) % 2 == 0) {
       digitalWrite(PIN_VIBRATION, LOW);
     } else {
       digitalWrite(PIN_VIBRATION, HIGH);

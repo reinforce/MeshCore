@@ -10,12 +10,12 @@
  * Provides vibration feedback for events like new messages and new contacts
  * Features:
  * - 1-second vibration pulse
- * - 5-second nag timeout (cooldown between vibrations)
+ * - 3-second nag timeout (cooldown between vibrations)
  * - Non-blocking operation
  */
 
 #ifndef VIBRATION_TIMEOUT
-#define VIBRATION_TIMEOUT 5000 // 5 seconds default
+#define VIBRATION_TIMEOUT 3000 // 3 seconds default
 #endif
 
 class GenericVibration {
