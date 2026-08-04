@@ -7,7 +7,7 @@
 #include <helpers/radiolib/CustomSX1262Wrapper.h>
 #include <helpers/AutoDiscoverRTCClock.h>
 #ifdef DISPLAY_CLASS
-  #include <helpers/ui/SSD1306Display.h>
+  #include <helpers/ui/SSD1306U8g2Display.h>
   #include <helpers/ui/MomentaryButton.h>
 #endif
 
