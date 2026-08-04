@@ -23,6 +23,10 @@ extern EnvironmentSensorManager sensors;
   extern MomentaryButton user_btn;
 #endif
 
+#ifdef PIN_VIBRATION
+  #include <helpers/ui/GenericVibration.h>
+#endif
+
 bool radio_init();
 mesh::LocalIdentity radio_new_identity();
 
