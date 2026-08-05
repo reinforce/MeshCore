@@ -25,9 +25,12 @@ public:
   void loop();        // non-blocking timer handling
   bool isVibrating(); // returns true if currently vibrating
   void stop();        // stop vibration immediately
+  void quiet(bool state);  // enables or disables the vibration
+  bool isQuiet();     // get vibration state on/off
 
 private:
   unsigned long duration;
+  bool _is_quiet = false;
 };
 
 #endif // ifdef PIN_VIBRATION
