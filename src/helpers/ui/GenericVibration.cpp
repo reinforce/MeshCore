@@ -8,6 +8,7 @@ void GenericVibration::begin() {
 }
 
 void GenericVibration::trigger() {
+  if (_is_quiet) return;
   duration = millis();
   digitalWrite(PIN_VIBRATION, HIGH);
 }
@@ -33,6 +34,14 @@ bool GenericVibration::isVibrating() {
 void GenericVibration::stop() {
   duration = 0;
   digitalWrite(PIN_VIBRATION, LOW);
+}
+
+void GenericVibration::quiet(bool state) {
+    _is_quiet = state;
+}
+
+bool GenericVibration::isQuiet() {
+    return _is_quiet;
 }
 
 #endif // ifdef PIN_VIBRATION
