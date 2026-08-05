@@ -131,9 +131,12 @@ int MomentaryButton::check(bool repeat_click) {
       case 3:
         event = BUTTON_EVENT_TRIPLE_CLICK;
         break;
+      case 4:
+        event = BUTTON_EVENT_QUADRUPLE_CLICK;
+        break;
       default:
-        // For 4+ clicks, treat as triple click?
-        event = BUTTON_EVENT_TRIPLE_CLICK;
+        // For 5+ clicks, treat as quadruple click?
+        event = BUTTON_EVENT_QUADRUPLE_CLICK;
         break;
     }
     _click_count = 0;
