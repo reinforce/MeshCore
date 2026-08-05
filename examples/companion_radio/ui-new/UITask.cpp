@@ -147,6 +147,13 @@ class HomeScreen : public UIScreen {
       display.drawXbm(iconX - 9, iconY + 1, muted_icon, 8, 8);
     }
 #endif
+    // show vibra icon if vibra is enabled
+#ifdef PIN_VIBRATION
+    if (! _task->isVibraQuiet()) {
+      display.setColor(DisplayDriver::RED);
+      display.drawXbm(iconX - 18, iconY + 1, vibra_icon, 8, 8);
+    }
+#endif
   }
 
   CayenneLPP sensors_lpp;
@@ -580,6 +587,7 @@ void UITask::begin(DisplayDriver* display, SensorManager* sensors, NodePrefs* no
 
 #ifdef PIN_VIBRATION
   vibration.begin();
+  vibration.quiet(_node_prefs->vibra_quiet);
 #endif
 
   ui_started_at = millis();
@@ -754,6 +762,8 @@ void UITask::loop() {
     c = handleDoubleClick(KEY_PREV);
   } else if (ev == BUTTON_EVENT_TRIPLE_CLICK) {
     c = handleTripleClick(KEY_SELECT);
+  } else if (ev == BUTTON_EVENT_QUADRUPLE_CLICK) {
+    c = handleQuadrupleClick(KEY_SELECT);
   }
 #endif
 #if defined(PIN_USER_BTN_ANA)
@@ -767,6 +777,8 @@ void UITask::loop() {
       c = handleDoubleClick(KEY_PREV);
     } else if (ev == BUTTON_EVENT_TRIPLE_CLICK) {
       c = handleTripleClick(KEY_SELECT);
+    } else if (ev == BUTTON_EVENT_QUADRUPLE_CLICK) {
+      c = handleQuadrupleClick(KEY_SELECT);
     }
     _analogue_pin_read_millis = millis();
   }
@@ -892,6 +904,14 @@ char UITask::handleTripleClick(char c) {
   return c;
 }
 
+char UITask::handleQuadrupleClick(char c) {
+  MESH_DEBUG_PRINTLN("UITask: quadruple click triggered");
+  checkDisplayOn(c);
+  toggleVibra();
+  c = 0;
+  return c;
+}
+
 bool UITask::getGPSState() {
   if (_sensors != NULL) {
     int num = _sensors->getNumSettings();
@@ -940,6 +960,22 @@ void UITask::toggleBuzzer() {
     _node_prefs->buzzer_quiet = buzzer.isQuiet();
     the_mesh.savePrefs();
     showAlert(buzzer.isQuiet() ? "Buzzer: OFF" : "Buzzer: ON", 800);
+    _next_refresh = 0;  // trigger refresh
+  #endif
+}
+
+void UITask::toggleVibra() {
+    // Toggle vibra quiet mode
+  #ifdef PIN_VIBRATION
+    if (vibration.isQuiet()) {
+      vibration.quiet(false);
+      notify(UIEventType::ack);
+    } else {
+      vibration.quiet(true);
+    }
+    _node_prefs->vibra_quiet = vibration.isQuiet();
+    the_mesh.savePrefs();
+    showAlert(vibration.isQuiet() ? "Vibra: OFF" : "Vibra: ON", 800);
     _next_refresh = 0;  // trigger refresh
   #endif
 }
