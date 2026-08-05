@@ -130,3 +130,8 @@ static const uint8_t charging_icon[] = {
 static const uint8_t plug_icon[] = {
   0x24, 0x24, 0x7E, 0x7E, 0x7E, 0x3C, 0x18, 0x18
 };
+
+// small vibration icon, 8x8px, shown next to battery icon when vibration enabled
+static const uint8_t vibration_icon[] = {
+  0x82, 0x41, 0x9A, 0x59, 0x9A, 0x59, 0x82, 0x41
+};
