@@ -763,6 +763,10 @@ void UITask::shutdown(bool restart){
 
   #endif // PIN_BUZZER
 
+  #ifdef PIN_VIBRATION
+    vibration.stop();
+  #endif
+
   if (restart) {
     _board->reboot();
   } else {
