@@ -86,7 +86,16 @@ public:
 #endif
   }
 
+  bool isVibrationQuiet() {
+#ifdef PIN_VIBRATION
+    return vibration.isQuiet();
+#else
+    return true;
+#endif
+  }
+
   void toggleBuzzer();
+  void toggleVibration();
   bool getGPSState();
   void toggleGPS();
 

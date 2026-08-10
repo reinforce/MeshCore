@@ -710,6 +710,7 @@ void UITask::begin(DisplayDriver* display, SensorManager* sensors, NodePrefs* no
 
 #ifdef PIN_VIBRATION
   vibration.begin();
+  vibration.quiet(_node_prefs->vibe_quiet);
 #endif
 
   ui_started_at = millis();
@@ -1090,6 +1091,22 @@ void UITask::toggleBuzzer() {
     _node_prefs->buzzer_quiet = buzzer.isQuiet();
     the_mesh.savePrefs();
     showAlert(buzzer.isQuiet() ? "Buzzer: OFF" : "Buzzer: ON", 800);
+    _next_refresh = 0;  // trigger refresh
+  #endif
+}
+
+void UITask::toggleVibration() {
+    // Toggle vibration on/off
+  #ifdef PIN_VIBRATION
+    if (vibration.isQuiet()) {
+      vibration.quiet(false);
+      notify(UIEventType::ack);
+    } else {
+      vibration.quiet(true);
+    }
+    _node_prefs->vibe_quiet = vibration.isQuiet();
+    the_mesh.savePrefs();
+    showAlert(vibration.isQuiet() ? "Vibration: OFF" : "Vibration: ON", 800);
     _next_refresh = 0;  // trigger refresh
   #endif
 }
