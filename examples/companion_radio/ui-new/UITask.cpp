@@ -148,6 +148,13 @@ class HomeScreen : public UIScreen {
       display.drawXbm(iconX - 9, iconY + 1, muted_icon, 8, 8);
     }
 #endif
+    // show vibration icon if vibration is enabled
+#ifdef PIN_VIBRATION
+    if (! _task->isVibrationQuiet()) {
+      display.setColor(UIColor::warning_txt);
+      display.drawXbm(iconX - 18, iconY + 1, vibration_icon, 8, 8);
+    }
+#endif
   }
 
   CayenneLPP sensors_lpp;
@@ -603,6 +610,7 @@ void UITask::begin(DisplayDriver* display, SensorManager* sensors, NodePrefs* no
 
 #ifdef PIN_VIBRATION
   vibration.begin();
+  vibration.quiet(_node_prefs->vibe_quiet);
 #endif
 
   ui_started_at = millis();
@@ -916,6 +924,14 @@ char UITask::handleTripleClick(char c) {
   return c;
 }
 
+char UITask::handleQuadrupleClick(char c) {
+  MESH_DEBUG_PRINTLN("UITask: quadruple click triggered");
+  checkDisplayOn(c);
+  toggleVibration();
+  c = 0;
+  return c;
+}
+
 bool UITask::getGPSState() {
   if (_sensors != NULL) {
     int num = _sensors->getNumSettings();
@@ -964,6 +980,22 @@ void UITask::toggleBuzzer() {
     _node_prefs->buzzer_quiet = buzzer.isQuiet();
     the_mesh.savePrefs();
     showAlert(buzzer.isQuiet() ? "Buzzer: OFF" : "Buzzer: ON", 800);
+    _next_refresh = 0;  // trigger refresh
+  #endif
+}
+
+void UITask::toggleVibration() {
+    // Toggle vibration on/off
+  #ifdef PIN_VIBRATION
+    if (vibration.isQuiet()) {
+      vibration.quiet(false);
+      notify(UIEventType::ack);
+    } else {
+      vibration.quiet(true);
+    }
+    _node_prefs->vibe_quiet = vibration.isQuiet();
+    the_mesh.savePrefs();
+    showAlert(vibration.isQuiet() ? "Vibration: OFF" : "Vibration: ON", 800);
     _next_refresh = 0;  // trigger refresh
   #endif
 }

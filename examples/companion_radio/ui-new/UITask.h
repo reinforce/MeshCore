@@ -60,6 +60,7 @@ class UITask : public AbstractUITask {
   char handleLongPress(char c);
   char handleDoubleClick(char c);
   char handleTripleClick(char c);
+  char handleQuadrupleClick(char c);
 
   void setCurrScreen(UIScreen* c);
 
@@ -86,7 +87,16 @@ public:
 #endif
   }
 
+  bool isVibrationQuiet() {
+#ifdef PIN_VIBRATION
+    return vibration.isQuiet();
+#else
+    return true;
+#endif
+  }
+
   void toggleBuzzer();
+  void toggleVibration();
   bool getGPSState();
   void toggleGPS();
 
