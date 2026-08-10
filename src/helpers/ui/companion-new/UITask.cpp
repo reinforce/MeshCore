@@ -214,16 +214,20 @@ class HomeScreen : public UIScreen {
       display.drawXbm(iconX - iconXoffset, iconY + 1, muted_icon, 8, 8);
     }
 #endif
-
-#if UI_HAS_JOYSTICK
+    // show vibration icon if vibration is enabled
+#ifdef PIN_VIBRATION
+    if (! _task->isVibrationQuiet()) {
+      iconXoffset += 9;
+      display.setColor(UIColor::warning_txt);
+      display.drawXbm(iconX - iconXoffset, iconY + 1, vibration_icon, 8, 8);
+    }
+#endif
     // show lock icon left of the other icons when buttons are locked
+#if UI_HAS_JOYSTICK
     if (_task->isLocked()) {
-      int x = iconX - (charging ? 18 : 9);
-  #ifdef PIN_BUZZER
-      if (_task->isBuzzerQuiet()) x -= 9;
-  #endif
+      iconXoffset += 9;
       display.setColor(UIColor::title_txt);
-      display.drawXbm(x, iconY + 1, lock_icon, 8, 8);
+      display.drawXbm(iconX - iconXoffset, iconY + 1, lock_icon, 8, 8);
     }
 #endif
   }
