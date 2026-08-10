@@ -175,6 +175,14 @@ class HomeScreen : public UIScreen {
       display.drawXbm(iconX - iconXoffset, iconY + 1, muted_icon, 8, 8);
     }
 #endif
+    // show vibration icon if vibration is enabled
+#ifdef PIN_VIBRATION
+    if (! _task->isVibrationQuiet()) {
+      iconXoffset += 9;
+      display.setColor(UIColor::warning_txt);
+      display.drawXbm(iconX - iconXoffset, iconY + 1, vibration_icon, 8, 8);
+    }
+#endif
   }
 
   CayenneLPP sensors_lpp;
