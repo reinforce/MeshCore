@@ -96,6 +96,9 @@ class HomeScreen : public UIScreen {
     RADIO,
     BLUETOOTH,
     ADVERT,
+#ifdef PIN_BUZZER
+    BUZZER,
+#endif
 #ifdef PIN_VIBRATION
     VIBRATION,
 #endif
@@ -351,6 +354,16 @@ public:
       display.drawXbm((display.width() - 32) / 2, 18, advert_icon, 32, 32);
       display.setColor(UIColor::secondary_txt);
       display.drawTextCentered(display.width() / 2, 64 - 11, "advert: " PRESS_LABEL);
+#ifdef PIN_BUZZER
+    } else if (_page == HomePage::BUZZER) {
+      display.setColor(UIColor::corp_blue);
+      display.drawXbm((display.width() - 32) / 2, 18,
+          _task->isBuzzerQuiet() ? buzzer_off : buzzer_on,
+          32, 32);
+      display.setColor(UIColor::secondary_txt);
+      display.setTextSize(1);
+      display.drawTextCentered(display.width() / 2, 64 - 11, "toggle: " PRESS_LABEL);
+#endif
 #ifdef PIN_VIBRATION
     } else if (_page == HomePage::VIBRATION) {
       display.setColor(UIColor::corp_blue);
@@ -537,6 +550,12 @@ public:
     if (c == KEY_ENTER && _page == HomePage::SENSORS) {
       _task->toggleGPS();
       next_sensors_refresh=0;
+      return true;
+    }
+#endif
+#ifdef PIN_BUZZER
+    if (c == KEY_ENTER && _page == HomePage::BUZZER) {
+      _task->toggleBuzzer();
       return true;
     }
 #endif
