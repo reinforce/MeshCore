@@ -134,6 +134,7 @@ class HomeScreen : public UIScreen {
     int iconHeight = 10;
     int iconX = display.width() - iconWidth - 5; // Position the icon near the top-right corner
     int iconY = 0;
+    int iconXoffset = 0; // icons offset
     display.setColor(UIColor::title_txt);
 
     // battery outline
@@ -150,20 +151,22 @@ class HomeScreen : public UIScreen {
     // keeping the fill bar itself clean and uninterrupted
     bool charging = board.isExternalPowered();
     if (charging) {
+      iconXoffset += 9;
       // There's no charge-complete signal on most boards, so "full" is a high
       // voltage band rather than an exact 100% (a real pack rarely reads 4.2V).
       const int BATT_FULL_PCT = 95;
       const uint8_t* symbol = (batteryPercentage >= BATT_FULL_PCT) ? plug_icon : charging_icon;
       display.setColor(UIColor::title_txt);
-      display.drawXbm(iconX - 9, iconY + 1, symbol, 8, 8);
+      display.drawXbm(iconX - iconXoffset, iconY + 1, symbol, 8, 8);
     }
 
     // show muted icon if buzzer is muted (shifted further left when the charging
     // icon already occupies the slot immediately left of the battery)
 #ifdef PIN_BUZZER
     if (_task->isBuzzerQuiet()) {
+      iconXoffset += 9;
       display.setColor(UIColor::warning_txt);
-      display.drawXbm(iconX - (charging ? 18 : 9), iconY + 1, muted_icon, 8, 8);
+      display.drawXbm(iconX - iconXoffset, iconY + 1, muted_icon, 8, 8);
     }
 #endif
   }
