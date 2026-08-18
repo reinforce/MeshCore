@@ -14,8 +14,8 @@
  * - Non-blocking operation
  */
 
-#ifndef VIBRATION_TIMEOUT
-#define VIBRATION_TIMEOUT 5000 // 5 seconds default
+#ifndef VIBRATION_INTERVAL
+#define VIBRATION_INTERVAL 250 // 250 milliseconds default
 #endif
 
 class GenericVibration {
@@ -29,8 +29,11 @@ public:
   bool isQuiet();     // get vibration state on/off
 
 private:
-  unsigned long duration;
   bool _is_quiet = false;
+  unsigned long currentMillis;
+  unsigned long previousMillis;
+  int count = 0;
+  bool pinState = LOW;
 };
 
 #endif // ifdef PIN_VIBRATION
