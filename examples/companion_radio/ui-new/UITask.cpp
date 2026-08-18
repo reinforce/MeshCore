@@ -699,10 +699,20 @@ switch(t){
 #endif
 
 #ifdef PIN_VIBRATION
-  // Trigger vibration for all UI events except none
-  if (t != UIEventType::none) {
+switch(t){
+  case UIEventType::ack:
+    vibration.single();
+    break;
+  case UIEventType::contactMessage:
+  case UIEventType::channelMessage:
+  case UIEventType::roomMessage:
     vibration.trigger();
-  }
+    break;
+  case UIEventType::newContactMessage:
+  case UIEventType::none:
+  default:
+    break;
+}
 #endif
 }
 
