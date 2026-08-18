@@ -9,6 +9,14 @@ void GenericVibration::begin() {
   pinState = LOW;
 }
 
+void GenericVibration::single() {
+  if (_is_quiet) return;
+  count = 1;
+  previousMillis = millis();
+  pinState = HIGH;
+  digitalWrite(PIN_VIBRATION, pinState);
+}
+
 void GenericVibration::trigger() {
   if (_is_quiet) return;
   count = 3;
