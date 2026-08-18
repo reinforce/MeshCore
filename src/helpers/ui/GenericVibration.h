@@ -22,6 +22,7 @@ class GenericVibration {
 public:
   void begin();       // set up vibration pin
   void trigger();     // trigger vibration if cooldown has passed
+  void single();      // do single vibration
   void loop();        // non-blocking timer handling
   bool isVibrating(); // returns true if currently vibrating
   void stop();        // stop vibration immediately
