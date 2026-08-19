@@ -586,7 +586,11 @@ public:
 };
 
 #ifndef UI_MSG_PREVIEW_SIZE
-  #define UI_MSG_PREVIEW_SIZE 78
+  #ifdef DISPLAY_UTF8_FONTS
+    #define UI_MSG_PREVIEW_SIZE (MAX_TEXT_LEN + 1)
+  #else
+    #define UI_MSG_PREVIEW_SIZE 78
+  #endif
 #endif
 
 class MsgPreviewScreen : public UIScreen {
