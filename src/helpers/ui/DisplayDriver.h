@@ -61,18 +61,59 @@ public:
   
   // convert UTF-8 characters to displayable block characters for compatibility
   virtual void translateUTF8ToBlocks(char* dest, const char* src, size_t dest_size) {
-    if (supportsUTF8()) {  // driver can render UTF-8 directly, pass through unchanged
-      strncpy(dest, src, dest_size - 1);
-      dest[dest_size - 1] = 0;
-      return;
-    }
     size_t j = 0;
+#ifdef DISPLAY_UTF8_FONTS
+    char lead = 0;
+    char cc = 0;
+#endif
     for (size_t i = 0; src[i] != 0 && j < dest_size - 1; i++) {
       unsigned char c = (unsigned char)src[i];
       if (c >= 32 && c <= 126) {
+#ifdef DISPLAY_UTF8_FONTS
+        lead = 0;
+        dest[j++] = c;
+      } else if (c == 0x0A || c == 0x0D) { // \n and \r
+        lead = 0;
+        dest[j++] = c;
+      } else if (c == 0xC2 || c == 0xC3 || c == 0xD0 || c == 0xD1 || c == 0xD2) {
+        // UTF-8 two-byte Cyrillic lead byte — consume continuation byte
+        lead = (char)c;
+        cc = 0;
+        c = (unsigned char)src[++i];
+        if (c != 0) {
+          if (lead == 0xC3) {
+            cc = (char)(c);
+          } else if (lead == 0xD0) {
+            if (c == 129) cc = (char)(c); // Ё
+            else if (c == 132) cc = (char)(c); // Є
+            else if (c == 134) cc = (char)(c); // І
+            else if (c == 135) cc = (char)(c); // Ї
+            else if (c > 143 && c < 192) cc = (char)(c); // А-Я
+          } else if (lead == 0xD1) {
+            if (c == 145) cc = (char)(c); // ё
+            else if (c == 148) cc = (char)(c); // є
+            else if (c == 150) cc = (char)(c); // і
+            else if (c == 151) cc = (char)(c); // ї
+            else if (c > 127 && c < 144) cc = (char)(c); // а-я
+          } else if (lead == 0xD2) {
+            if (c == 144) cc = (char)(c); // Ґ
+            else if (c == 145) cc = (char)(c); // ґ
+          }
+          if (cc != 0) {
+            dest[j++] = lead;
+            dest[j++] = cc;
+          } else {
+            dest[j++] = '\x5F';  // fallback to _
+          }
+        }
+      } else if (c >= 0x80) {
+        lead = 0;
+        dest[j++] = '\x5F';  // non-Cyrillic non-ASCII fallback ti _
+#else
         dest[j++] = c;  // ASCII printable
       } else if (c >= 0x80) {
         dest[j++] = '\xDB';  // CP437 full block █
+#endif
         while (src[i+1] && (src[i+1] & 0xC0) == 0x80) 
           i++;  // skip UTF-8 continuation bytes
       }
