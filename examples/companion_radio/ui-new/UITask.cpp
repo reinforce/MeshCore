@@ -561,8 +561,7 @@ public:
       if (millis() < discovery_req_time + 5000) {
         return 1000; // more frequent updates just after req
       } else if (count < DISCOVERED_NODES_TABLE_SIZE -1) { // show only 5 sec after last disc
-        y = 10 + 11 * DISCOVERED_NODES_TABLE_SIZE;
-        display.drawTextCentered(display.width() / 2, y, "discover: " PRESS_LABEL);
+        display.drawTextCentered(display.width() / 2, 64 - 11, "discover: " PRESS_LABEL);
       }
 #endif
 #ifndef UI_NO_HIBERNATE
