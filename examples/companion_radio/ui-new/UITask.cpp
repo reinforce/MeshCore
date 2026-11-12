@@ -113,6 +113,9 @@ static void formatFixAge(char* buf, size_t size, uint32_t seconds) {
 class HomeScreen : public UIScreen {
   enum HomePage {
     FIRST,
+#ifdef UI_SHOW_CLOCK
+    CLOCK,
+#endif
     RECENT,
     RADIO,
 #ifdef BLE_PIN_CODE
@@ -333,17 +336,6 @@ public:
       sprintf(tmp, "MSG: %d", _task->getMsgCount());
       display.drawTextCentered(display.width() / 2, 22, tmp);
       #endif
-      if (_node_prefs->ui_show_clock) {
-        display.setTextSize(3);
-        uint32_t now = _rtc->getCurrentTime();
-        now += (int32_t)(_node_prefs->tz_offset * 3600);
-        DateTime dt (now);
-        sprintf(tmp, "%02d:%02d", dt.hour(), dt.minute());
-        display.drawTextCentered(display.width() / 2, 60, tmp);
-        display.setTextSize(1);
-        sprintf(tmp, "%02d/%02d/%d", dt.day(), dt.month(), dt.year());
-        display.drawTextCentered(display.width() / 2, 80, tmp);
-      }
       #ifdef ENABLE_WIFI_INTERFACE
         IPAddress ip = WiFi.localIP();
         snprintf(tmp, sizeof(tmp), "IP: %d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
@@ -353,21 +345,27 @@ public:
       if (_task->hasConnection()) {
         display.setColor(UIColor::warning_txt);
         display.setTextSize(1);
-        if (_node_prefs->ui_show_clock)
-          display.drawTextCentered(display.width() / 2, 110, "< Connected >");
-        else
-          display.drawTextCentered(display.width() / 2, 43, "< Connected >");
+        display.drawTextCentered(display.width() / 2, 43, "< Connected >");
       } else if (the_mesh.getBLEPin() != 0) { // BT pin
         display.setColor(UIColor::warning_txt);
         sprintf(tmp, "Pin:%d", the_mesh.getBLEPin());
-        if (_node_prefs->ui_show_clock) {
-          display.setTextSize(1);
-          display.drawTextCentered(display.width() / 2, 110, tmp);
-        } else {
-          display.setTextSize(2);
-          display.drawTextCentered(display.width() / 2, 43, tmp);
-        }
+        display.setTextSize(2);
+        display.drawTextCentered(display.width() / 2, 43, tmp);
       }
+#ifdef UI_SHOW_CLOCK
+    } else if (_page == HomePage::CLOCK) {
+      if (_node_prefs->ui_show_clock) {
+        display.setTextSize(3);
+        uint32_t now = _rtc->getCurrentTime();
+        now += (int32_t)(_node_prefs->tz_offset * 3600);
+        DateTime dt (now);
+        sprintf(tmp, "%02d:%02d", dt.hour(), dt.minute());
+        display.drawTextCentered(display.width() / 2, 24, tmp);
+        display.setTextSize(1);
+        sprintf(tmp, "%02d/%02d/%d", dt.day(), dt.month(), dt.year());
+        display.drawTextCentered(display.width() / 2, 52, tmp);
+      }
+#endif
     } else if (_page == HomePage::RECENT) {
       the_mesh.getRecentlyHeard(recent, UI_RECENT_LIST_SIZE);
       display.setColor(UIColor::primary_txt);
